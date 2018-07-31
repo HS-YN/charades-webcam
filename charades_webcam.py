@@ -18,6 +18,8 @@ CWD_PATH = os.getcwd()
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'frozen_model.pb')
 PREDICTION_DECAY = 0.6 # [0,1) How slowly to update the predictions (0.99 is slowest, 0 is instant)
 
+# Disable debug log
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 def loadlabels():
     # List of the strings that is used to add correct label for each box.
@@ -69,8 +71,8 @@ def recognize_activity(image_np, sess, detection_graph, accumulator):
         category_index,
         use_normalized_coordinates=True,
         line_thickness=8,
-        min_score_thresh=0,
-        display_score=False)
+        min_score_thresh=.05,
+        display_score=True)
     return image_np
 	
 
@@ -98,7 +100,7 @@ def worker(input_q, output_q):
     sess.close()
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-src', '--source', dest='video_source', type=int,
                         default=0, help='Device index of the camera.')
@@ -112,8 +114,8 @@ if __name__ == '__main__':
                         default=5, help='Size of the queue.')
     args = parser.parse_args()
 
-    logger = multiprocessing.log_to_stderr()
-    logger.setLevel(multiprocessing.SUBDEBUG)
+    #logger = multiprocessing.log_to_stderr()
+    #logger.setLevel(multiprocessing.SUBDEBUG)
 
     input_q = Queue(maxsize=args.queue_size)
     output_q = Queue(maxsize=args.queue_size)
@@ -134,7 +136,7 @@ if __name__ == '__main__':
         cv2.imshow('Video', output_rgb)
         fps.update()
 
-        print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
+        # print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -146,3 +148,8 @@ if __name__ == '__main__':
     pool.terminate()
     video_capture.stop()
     cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    main()
+
