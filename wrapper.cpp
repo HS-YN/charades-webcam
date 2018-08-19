@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     PySys_SetArgv(argc, (wchar_t**)wargv);
     PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString("sys.path.append('/home/hsynterry/anaconda3/envs/object-detection/lib/python3.5/site-packages/')\n");
+    PyRun_SimpleString("sys.path.append('/opt/conda/envs/object-detection/lib/python3.5/site-packages/')\n");
     PyRun_SimpleString("sys.path.append('$HOME/charades-webcam/')\n");
     PyRun_SimpleFile(fd, "charades_webcam.py");
 
