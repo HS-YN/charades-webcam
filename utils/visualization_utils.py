@@ -404,7 +404,7 @@ def visualize_boxes_and_labels_on_image_array(image,
           box_to_color_map[box] = STANDARD_COLORS[
               classes[i] % len(STANDARD_COLORS)]
 
-  print(frame_result + "}" if len(frame_result) <= 8 else frame_result[:-1] + "}")
+  #print(frame_result + "}" if len(frame_result) <= 8 else frame_result[:-1] + "}")
 
   # Draw all boxes onto image.
   for box, color in six.iteritems(box_to_color_map):

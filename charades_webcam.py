@@ -7,6 +7,7 @@ import argparse
 import multiprocessing
 import numpy as np
 import tensorflow as tf
+import time
 
 from utils.app_utils import FPS, WebcamVideoStream
 from multiprocessing import Queue, Pool
@@ -93,7 +94,10 @@ def worker(input_q, output_q):
     while True:
         fps.update()
         frame = input_q.get()
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        try:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        except:
+            continue
         output_q.put(recognize_activity(frame_rgb, sess, detection_graph, accumulator))
 
     fps.stop()
@@ -127,7 +131,11 @@ def main():
     fps = FPS().start()
 
     while True:  # fps._numFrames < 120
-        frame = video_capture.read()
+        #frame = video_capture.read()
+        time.sleep(.100)
+        frame = cv2.imread("/Net/openpose/pred.jpg");
+        if frame is None:
+            print("ERROR!")
         input_q.put(frame)
 
         t = time.time()
