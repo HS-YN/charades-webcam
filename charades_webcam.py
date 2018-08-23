@@ -13,7 +13,8 @@ from utils.app_utils import FPS, WebcamVideoStream
 from multiprocessing import Queue, Pool
 from utils import visualization_utils as vis_util
 
-CWD_PATH = os.getcwd()
+#CWD_PATH = os.getcwd()
+CWD_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Path to frozen detection graph. This is the actual model that is used for the classification.
 PATH_TO_CKPT = os.path.join(CWD_PATH, 'frozen_model.pb')
@@ -25,7 +26,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 def loadlabels():
     # List of the strings that is used to add correct label for each box.
     labels = {}
-    with open('labels.txt') as f:
+    with open(os.path.join(CWD_PATH, 'labels.txt')) as f:
         for line in f:
             x = line.split(' ')
             cls, rest = x[0], ' '.join(x[1:]).strip()
@@ -124,32 +125,33 @@ def main():
     input_q = Queue(maxsize=args.queue_size)
     output_q = Queue(maxsize=args.queue_size)
     pool = Pool(args.num_workers, worker, (input_q, output_q))
-
+    '''
     video_capture = WebcamVideoStream(src=args.video_source,
                                       width=args.width,
                                       height=args.height).start()
-    fps = FPS().start()
+    '''
+    # fps = FPS().start()
 
     while True:  # fps._numFrames < 120
         #frame = video_capture.read()
         time.sleep(.100)
-        frame = cv2.imread("/Net/openpose/pred.jpg");
+        frame = cv2.imread(os.path.join(CWD_PATH, "../openpose/pred.jpg"));
         if frame is None:
             print("ERROR!")
         input_q.put(frame)
 
-        t = time.time()
+        # t = time.time()
 
         output_rgb = cv2.cvtColor(output_q.get(), cv2.COLOR_RGB2BGR)
         cv2.imshow('Video', output_rgb)
-        fps.update()
+        # fps.update()
 
         # print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    fps.stop()
+    # fps.stop()
     print('[INFO] elapsed time (total): {:.2f}'.format(fps.elapsed()))
     print('[INFO] approx. FPS: {:.2f}'.format(fps.fps()))
 
